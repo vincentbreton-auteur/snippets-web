@@ -1,0 +1,256 @@
+/**
+ * Shortcode pour afficher un lien vers un article aléatoire
+ * Usage : [article_aleatoire] ou [article_aleatoire texte="Découvrir un article"]
+ */
+function article_aleatoire_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'texte' => 'Article au hasard',
+        'classe' => 'btn-article-aleatoire'
+    ), $atts);
+    
+    $args = array(
+        'post_type' => 'post',
+        'posts_per_page' => 1,
+        'orderby' => 'rand',
+        'post_status' => 'publish'
+    );
+    
+    $random_post = new WP_Query($args);
+    
+    if ($random_post->have_posts()) {
+        $random_post->the_post();
+        $permalink = get_permalink();
+        $output = sprintf(
+            '<a href="%s" class="%s">%s</a>',
+            esc_url($permalink),
+            esc_attr($atts['classe']),
+            esc_html($atts['texte'])
+        );
+        wp_reset_postdata();
+        return $output;
+    }
+    
+    return '';
+}
+add_shortcode('article_aleatoire', 'article_aleatoire_shortcode');
+
+/**
+ * Shortcode pour afficher directement un article aléatoire complet
+ * Usage : [article_aleatoire_complet]
+ */
+function article_aleatoire_complet_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'bouton_recharger' => 'Charger un autre article',
+        'afficher_image' => 'oui',
+        'afficher_meta' => 'oui'
+    ), $atts);
+    
+    $args = array(
+        'post_type' => 'post',
+        'posts_per_page' => 1,
+        'orderby' => 'rand',
+        'post_status' => 'publish'
+    );
+    
+    $random_post = new WP_Query($args);
+    
+    if ($random_post->have_posts()) {
+        ob_start();
+        
+        while ($random_post->have_posts()) {
+            $random_post->the_post();
+            ?>
+            <article id="post-<?php the_ID(); ?>" <?php post_class('article-aleatoire-complet'); ?>>
+                
+                <?php if ($atts['afficher_image'] === 'oui' && has_post_thumbnail()) : ?>
+                    <div class="article-aleatoire-image">
+                        <?php the_post_thumbnail('large'); ?>
+                    </div>
+                <?php endif; ?>
+                
+                <header class="article-aleatoire-header">
+                    <h2 class="article-aleatoire-titre">
+                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                    </h2>
+                    
+                    <?php if ($atts['afficher_meta'] === 'oui') : ?>
+                        <div class="article-aleatoire-meta">
+                            <time datetime="<?php echo get_the_date('c'); ?>">
+                                <?php echo get_the_date(); ?>
+                            </time>
+                            <?php 
+                            $categories = get_the_category();
+                            if ($categories) {
+                                echo ' • ';
+                                $cat_links = array();
+                                foreach ($categories as $cat) {
+                                    $cat_links[] = '<a href="' . get_category_link($cat->term_id) . '">' . $cat->name . '</a>';
+                                }
+                                echo implode(', ', $cat_links);
+                            }
+                            ?>
+                        </div>
+                    <?php endif; ?>
+                </header>
+                
+                <div class="article-aleatoire-contenu">
+                    <?php 
+                    global $wp_embed;
+                    $content = get_the_content();
+                    $content = apply_filters('the_content', $content);
+                    $content = $wp_embed->autoembed($content);
+                    echo $content;
+                    ?>
+                </div>
+                
+                <footer class="article-aleatoire-footer">
+                    <a href="<?php echo esc_url(get_permalink()); ?>" class="btn-voir-article">
+                        Voir l'article complet
+                    </a>
+                    <a href="<?php echo esc_url(add_query_arg('refresh', time())); ?>" class="btn-recharger-article">
+                        <?php echo esc_html($atts['bouton_recharger']); ?>
+                    </a>
+                </footer>
+                
+            </article>
+            <?php
+        }
+        
+        wp_reset_postdata();
+        return ob_get_clean();
+    }
+    
+    return '<p>Aucun article trouvé.</p>';
+}
+add_shortcode('article_aleatoire_complet', 'article_aleatoire_complet_shortcode');
+
+/**
+ * Styles pour les articles aléatoires
+ */
+function article_aleatoire_styles() {
+    ?>
+    <style>
+        /* Bouton lien simple */
+        .btn-article-aleatoire {
+            display: inline-block;
+            padding: 0.75em 1.5em;
+            background-color: #4a608c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: opacity 0.2s;
+        }
+        .btn-article-aleatoire:hover {
+            opacity: 0.8;
+        }
+        
+        /* Article aléatoire complet */
+        .article-aleatoire-complet {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2em 0;
+        }
+        
+        .article-aleatoire-image {
+            margin-bottom: 2em;
+        }
+        
+        .article-aleatoire-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .article-aleatoire-header {
+            margin-bottom: 2em;
+        }
+        
+        .article-aleatoire-titre {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+            line-height: 1.2;
+        }
+        
+        .article-aleatoire-titre a {
+            color: var(--wp--preset--color--contrast, #000);
+            text-decoration: none;
+        }
+        
+        .article-aleatoire-titre a:hover {
+            opacity: 0.7;
+        }
+        
+        .article-aleatoire-meta {
+            font-size: 0.9em;
+            color: var(--wp--preset--color--contrast-2, #666);
+        }
+        
+        .article-aleatoire-meta a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .article-aleatoire-meta a:hover {
+            text-decoration: underline;
+        }
+        
+        .article-aleatoire-contenu {
+            margin-bottom: 2em;
+            line-height: 1.6;
+        }
+        
+        .article-aleatoire-footer {
+            display: flex;
+            gap: 1em;
+            flex-wrap: wrap;
+            padding-top: 2em;
+            border-top: 1px solid var(--wp--preset--color--contrast-3, #ddd);
+        }
+        
+        .btn-voir-article,
+        .btn-recharger-article {
+            display: inline-block;
+            padding: 0.75em 1.5em;
+            background-color: #4a608c;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: opacity 0.2s;
+            font-family: inherit;
+        }
+        
+        .btn-voir-article:hover,
+        .btn-recharger-article:hover {
+            opacity: 0.8;
+        }
+        
+        .btn-recharger-article {
+            background-color: #5a7099;
+        }
+        
+        @media (max-width: 768px) {
+            .article-aleatoire-complet {
+                padding: 1em;
+            }
+            
+            .article-aleatoire-titre {
+                font-size: 1.5em;
+            }
+            
+            .article-aleatoire-footer {
+                flex-direction: column;
+            }
+            
+            .btn-voir-article,
+            .btn-recharger-article {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+    <?php
+}
+add_action('wp_head', 'article_aleatoire_styles');
