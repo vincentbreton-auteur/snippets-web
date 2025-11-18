@@ -1,0 +1,158 @@
+<style media="print">
+/* ========================================
+   PRINT CSS - GREEN IT
+   Impact écologique : ~2Ko
+   ======================================== */
+
+/* Message de sensibilisation */
+body::before {
+  content: "🌱 Cet article est disponible en ligne sur [vincentbreton.fr] - Pensez à l'environnement avant d'imprimer";
+  display: block;
+  padding: 15px;
+  background: #f9f9f9 !important;
+  border: 2px solid #000;
+  text-align: center;
+  font-size: 11pt;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* Masquer les éléments inutiles */
+nav,
+header,
+footer,
+.sidebar,
+.widget,
+.comments,
+.comment-form,
+aside,
+.navigation,
+.menu,
+.social-share,
+.related-posts,
+button,
+input[type="submit"],
+.ads,
+.advertisement,
+#wpadminbar {
+  display: none !important;
+}
+
+/* Optimisation pour l'impression */
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #000 !important;
+  background: #fff !important;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Supprimer TOUS les backgrounds (économie d'encre) */
+* {
+  background: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* Contenu principal */
+article,
+main,
+.entry-content {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+}
+
+/* Titres */
+h1, h2, h3, h4, h5, h6 {
+  color: #000 !important;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+h1 { font-size: 18pt; margin-bottom: 10pt; }
+h2 { font-size: 14pt; margin-top: 12pt; }
+h3 { font-size: 12pt; }
+
+/* Paragraphes */
+p {
+  orphans: 3;
+  widows: 3;
+}
+
+/* Éviter les sauts de page intempestifs */
+article,
+blockquote,
+pre,
+img,
+table,
+figure {
+  page-break-inside: avoid;
+}
+
+/* Images */
+img {
+  max-width: 100% !important;
+  height: auto !important;
+  page-break-inside: avoid;
+  /* Si vous voulez vraiment économiser l'encre, décommentez : */
+  /* display: none !important; */
+}
+
+/* Liens : afficher les URLs */
+a[href]:after {
+  content: " (" attr(href) ")";
+  font-size: 9pt;
+  color: #666 !important;
+  word-wrap: break-word;
+}
+
+/* Sauf pour les liens internes */
+a[href^="#"]:after,
+a[href^="javascript:"]:after {
+  content: "";
+}
+
+/* Listes */
+ul, ol {
+  margin-left: 15pt;
+}
+
+/* Code (si vous en avez) */
+pre, code {
+  border: 1pt solid #000 !important;
+  padding: 5pt;
+  font-size: 9pt;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Tableaux */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 10pt;
+}
+
+th, td {
+  border: 1pt solid #000;
+  padding: 5pt;
+  text-align: left;
+}
+
+/* Marges de page */
+@page {
+  margin: 2cm;
+  size: A4;
+}
+
+/* En-tête et pied de page du navigateur */
+@page {
+  @top-center {
+    content: "Green IT";
+  }
+}
+</style>
