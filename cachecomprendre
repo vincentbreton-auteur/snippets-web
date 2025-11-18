@@ -1,0 +1,18 @@
+// Version optimisée qui évite les conflits cache-control
+function add_xtremcache_headers_optimized() {
+    if (!is_admin() && !wp_doing_ajax() && !wp_doing_cron()) {
+        
+        // Ces en-têtes sont nécessaires pour WordPress et non conflictuels
+        header('X-Cache-Enabled: true', false);
+        
+        // On laisse XtremCache gérer cache-control entièrement
+        // Ajouter seulement Last-Modified et ETag si pas de conflit
+        if (!headers_sent()) {
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT', false);
+            
+            $etag = md5($_SERVER['REQUEST_URI'] . filemtime(ABSPATH . 'index.php'));
+            header('ETag: "' . $etag . '"', false);
+        }
+    }
+}
+add_action('template_redirect', 'add_xtremcache_headers_optimized', 1);
