@@ -1,0 +1,23 @@
+/**
+ * Nettoie automatiquement les images manquantes dans le contenu des articles WordPress.
+ * Supprime les <img> dont le fichier n'existe plus dans wp-content/uploads.
+ */
+
+add_filter('the_content', function ($content) {
+    // Recherche toutes les balises <img ... >
+    if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $matches)) {
+        foreach ($matches[0] as $index => $imgTag) {
+            $imgUrl = $matches[1][$index];
+            // Ne traiter que les images locales (hébergées sur le site)
+            if (strpos($imgUrl, home_url('/wp-content/uploads/')) !== false) {
+                // Convertir l'URL en chemin serveur
+                $filePath = str_replace(home_url('/'), ABSPATH, $imgUrl);
+                if (!file_exists($filePath)) {
+                    // Supprime complètement la balise <img> si le fichier n'existe pas
+                    $content = str_replace($imgTag, '', $content);
+                }
+            }
+        }
+    }
+    return $content;
+}, 20);
