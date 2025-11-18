@@ -12,7 +12,7 @@ Le code peut être intégré aisément via une extension de type WpCode
 
 - tempslecture : indiquer le temps de lecture d'un article
 
-  ## Attention : dans certains cas,il faudra adapter le plugin à votre thème WordPress ou changer certains liens internes
+  ### Attention : dans certains cas,il faudra adapter le plugin à votre thème WordPress ou changer certains liens internes
 
 
 ## Liens
