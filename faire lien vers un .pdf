@@ -1,0 +1,36 @@
+.wp-block-file {
+    margin: 80px 0 !important;
+    text-align: center;
+    padding: 32px;
+    background: #fefefe;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
+
+.wp-block-file__textlink {
+    display: block;
+    margin-bottom: 16px;
+    color: #374151;
+    font-weight: 600;
+    font-size: 1.2em;
+}
+
+.wp-block-file__button {
+    display: inline-block;
+    background: #4b5563;
+    color: #ffffff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wp-block-file__button:hover {
+    background: #374151;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
