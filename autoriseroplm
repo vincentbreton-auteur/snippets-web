@@ -1,0 +1,20 @@
+// Autoriser les fichiers OPML
+add_filter('upload_mimes', 'allow_opml_upload');
+function allow_opml_upload($mimes) {
+    $mimes['opml'] = 'text/x-opml';
+    $mimes['xml'] = 'application/xml';
+    return $mimes;
+}
+
+// Vérification supplémentaire du type de fichier
+add_filter('wp_check_filetype_and_ext', 'fix_opml_mime_type', 10, 4);
+function fix_opml_mime_type($data, $file, $filename, $mimes) {
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    
+    if ($ext === 'opml') {
+        $data['ext'] = 'opml';
+        $data['type'] = 'text/x-opml';
+    }
+    
+    return $data;
+}
