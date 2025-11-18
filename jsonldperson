@@ -1,0 +1,23 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Vincent Breton",
+  "url": "https://vincentbreton.fr/",
+  "image": "https://vincentbreton.fr/wp-content/uploads/2025/11/cropped-vbreton.webp",
+  "jobTitle": "Auteur",
+  "description": "Auteur du site vincentbreton.fr. Écrit un journal, de la poésie, de la fiction. A travaillé dans l'Éducation. Vit en Occitanie.",
+  "email": "site@vincentbreton.fr",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Salvagnac-Cajarc",
+    "addressRegion": "Occitanie",
+    "addressCountry": "FR"
+  },
+  "sameAs": [
+    "https://piaille.fr/@VincentBreton"
+	"https://www.wikidata.org/wiki/Q136814209"
+	"https://github.com/vincentbreton-auteur"
+  ]
+}
+</script>
