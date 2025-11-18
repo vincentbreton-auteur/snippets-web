@@ -1,0 +1,16 @@
+function afficher_temps_lecture($content) {
+    if (is_single() && is_main_query()) {
+        // Calcul du temps de lecture (en minutes)
+        $moyenne_mots_par_minute = 200;
+        $nombre_mots = str_word_count(strip_tags($content));
+        $temps = ceil($nombre_mots / $moyenne_mots_par_minute);
+
+        // Texte affiché
+        $texte = '<p class="temps-lecture">⏱️ Temps de lecture estimé : ' . $temps . ' minute' . ($temps > 1 ? 's' : '') . '</p>';
+
+        // Ajoute avant le contenu
+        return $texte . $content;
+    }
+    return $content;
+}
+add_filter('the_content', 'afficher_temps_lecture');
