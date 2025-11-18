@@ -1,0 +1,203 @@
+/**
+ * Intégration du fil Mastodon de Vincent Breton
+ * Pour WPCode - Type: PHP Snippet
+ */
+
+// Fonction pour récupérer les posts Mastodon avec cache
+function vb_get_mastodon_posts($limit = 10) {
+    // ID du compte @VincentBreton@piaille.fr
+    $account_id = '110972899561318470';
+    $transient_key = 'mastodon_feed_vb';
+    
+    // Vérifier le cache (30 minutes)
+    $cached_posts = get_transient($transient_key);
+    if (false !== $cached_posts) {
+        return $cached_posts;
+    }
+    
+    // Récupérer les posts depuis l'API
+    $api_url = sprintf(
+        'https://piaille.fr/api/v1/accounts/%s/statuses?limit=%d&exclude_replies=true&exclude_reblogs=true',
+        $account_id,
+        $limit
+    );
+    
+    $response = wp_remote_get($api_url, array(
+        'timeout' => 15,
+        'sslverify' => true,
+        'headers' => array(
+            'Accept' => 'application/json'
+        )
+    ));
+    
+    if (is_wp_error($response)) {
+        error_log('Mastodon API Error: ' . $response->get_error_message());
+        return false;
+    }
+    
+    $body = wp_remote_retrieve_body($response);
+    $posts = json_decode($body, true);
+    
+    // Mettre en cache pour 30 minutes
+    if (!empty($posts) && is_array($posts)) {
+        set_transient($transient_key, $posts, 1800);
+    }
+    
+    return $posts;
+}
+
+// Shortcode pour afficher le fil
+function vb_mastodon_feed_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'limit' => 10
+    ), $atts);
+    
+    $posts = vb_get_mastodon_posts(intval($atts['limit']));
+    
+    if (!$posts || !is_array($posts)) {
+        return '<div class="mastodon-feed-error"><p>Impossible de charger le fil Mastodon pour le moment.</p></div>';
+    }
+    
+    ob_start();
+    ?>
+    <div class="mastodon-feed">
+        <?php foreach ($posts as $post): ?>
+            <article class="mastodon-post">
+                <div class="post-header">
+                    <time datetime="<?php echo esc_attr($post['created_at']); ?>">
+                        <?php 
+                        // Conversion correcte UTC vers fuseau WordPress
+                        $date = new DateTime($post['created_at']);
+                        $date->setTimezone(new DateTimeZone(wp_timezone_string()));
+                        echo $date->format('j F Y à G\hi');
+                        ?>
+                    </time>
+                </div>
+                
+                <div class="post-content">
+                    <?php echo wp_kses_post($post['content']); ?>
+                </div>
+                
+                <?php if (!empty($post['media_attachments'])): ?>
+                    <div class="post-media">
+                        <?php foreach ($post['media_attachments'] as $media): ?>
+                            <?php if ($media['type'] === 'image'): ?>
+                                <img 
+                                    src="<?php echo esc_url($media['url']); ?>" 
+                                    alt="<?php echo esc_attr($media['description'] ?? ''); ?>"
+                                    loading="lazy"
+                                >
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                
+                <div class="post-footer">
+                    <a href="<?php echo esc_url($post['url']); ?>" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                        Voir sur Mastodon →
+                    </a>
+                </div>
+            </article>
+        <?php endforeach; ?>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('mastodon_feed', 'vb_mastodon_feed_shortcode');
+
+// Ajouter les styles (via wp_head)
+function vb_mastodon_feed_styles() {
+    // Ne charger que si le shortcode est présent sur la page
+    if (!is_singular() && !is_page()) {
+        return;
+    }
+    ?>
+    <style>
+    .mastodon-feed {
+        display: grid;
+        gap: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .mastodon-post {
+        background: #f8f9fa;
+        border-left: 4px solid #d63031;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .post-header time {
+        color: #111111;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .post-content {
+        margin: 1rem 0;
+        line-height: 1.6;
+    }
+    
+    .post-content p {
+        margin-bottom: 0.8rem;
+    }
+    
+    .post-content p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .post-content a {
+        color: #6364ff;
+        text-decoration: underline;
+    }
+    
+    .post-media {
+        margin: 1rem 0;
+        display: grid;
+        gap: 0.5rem;
+    }
+    
+    .post-media img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .post-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .post-footer a {
+        color: #d63031;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .post-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    .mastodon-feed-error {
+        padding: 1rem;
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 4px;
+        color: #856404;
+    }
+    
+    @media (max-width: 768px) {
+        .mastodon-post {
+            padding: 1rem;
+        }
+    }
+    </style>
+    <?php
+}
+add_action('wp_head', 'vb_mastodon_feed_styles');
