@@ -1,0 +1,5 @@
+function shortcode_nombre_articles() {
+    $count_posts = wp_count_posts('post');
+    return $count_posts->publish;
+}
+add_shortcode('nb_articles', 'shortcode_nombre_articles');
