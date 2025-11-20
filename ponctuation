@@ -1,0 +1,9 @@
+add_filter( 'the_content', function( $content ) {
+    // Espaces insécables avant ? ! : ;
+    $content = preg_replace(
+        '/\s*([?!:;])/',
+        '&nbsp;$1',
+        $content
+    );
+    return $content;
+});
