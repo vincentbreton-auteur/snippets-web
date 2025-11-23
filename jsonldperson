@@ -5,8 +5,8 @@
   "name": "Vincent Breton",
   "url": "https://vincentbreton.fr/",
   "image": "https://vincentbreton.fr/wp-content/uploads/2025/11/cropped-vbreton.webp",
-  "jobTitle": "Auteur",
-  "description": "Auteur du site vincentbreton.fr. Écrit un journal, de la poésie, de la fiction. A travaillé dans l'Éducation. Vit en Occitanie.",
+  "jobTitle": "Auteur et poète",
+  "description": "Auteur du site vincentbreton.fr. Écrit un journal, de la poésie et de la fiction. A travaillé dans l'Éducation. Vit en Occitanie.",
   "email": "site@vincentbreton.fr",
   "address": {
     "@type": "PostalAddress",
@@ -15,9 +15,10 @@
     "addressCountry": "FR"
   },
   "sameAs": [
-    "https://piaille.fr/@VincentBreton"
-	"https://www.wikidata.org/wiki/Q136814209"
-	"https://github.com/vincentbreton-auteur"
+    "https://piaille.fr/@VincentBreton",
+    "https://www.wikidata.org/wiki/Q136814209",
+    "https://github.com/vincentbreton-auteur"
   ]
 }
 </script>
+
